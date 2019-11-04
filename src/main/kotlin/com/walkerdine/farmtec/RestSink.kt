@@ -1,23 +1,37 @@
 package com.walkerdine.farmtec
 
+import org.springframework.stereotype.Controller
 import java.util.concurrent.atomic.AtomicLong
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.ui.Model
+
+
+
+
 
 data class Greeting(val id: Long, val content: String)
 
 
-@RestController
+@Controller
 class GreetingController {
 
-    val counter = AtomicLong()
-
     @GetMapping("/greeting")
-    fun greeting(@RequestParam(value = "name", defaultValue = "World") name: String) =
-        Greeting(counter.incrementAndGet(), "Hello, $name")
+    fun greeting(
+        @RequestParam(
+            name = "name",
+            required = false,
+            defaultValue = "World"
+        ) name: String, model: Model
+    ): String {
+        model.addAttribute("name", name)
+        return "greeting"
+    }
 
 }
+
+
 
 
 @RestController
