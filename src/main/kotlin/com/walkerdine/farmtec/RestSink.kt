@@ -1,38 +1,10 @@
 package com.walkerdine.farmtec
 
-import org.springframework.stereotype.Controller
-import java.util.concurrent.atomic.AtomicLong
+
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.ui.Model
-
-
-
-
-
-data class Greeting(val id: Long, val content: String)
-
-
-@Controller
-class GreetingController {
-
-    @GetMapping("/greeting")
-    fun greeting(
-        @RequestParam(
-            name = "name",
-            required = false,
-            defaultValue = "World"
-        ) name: String, model: Model
-    ): String {
-        model.addAttribute("name", name)
-        return "greeting"
-    }
-
-}
-
-
-
+import org.springframework.web.servlet.config.annotation.CorsRegistry
 
 @RestController
 class WeightSink(private val weightReadingRepository: WeightReadingRepository){
@@ -54,5 +26,41 @@ class RFIDSink(private val rfidReadingRepository: RfidReadingRepository){
             rfidReadingRepository.save(reading)
             reading
         }
+
+}
+@RestController
+class GetController(private val repository: RfidReadingRepository){
+    @GetMapping("/RFIDS")
+    fun findAll() = repository.findAll()
+}
+
+@RestController
+class WeightGetController(private val repository: WeightReadingRepository){
+    @GetMapping("/Weights")
+    fun findAll() = repository.findAll()
+}
+
+fun addCorsMappings(registry: CorsRegistry) {
+    registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
+        .allowedOrigins("http://localhost:8080")
+        .allowedHeaders(
+            "Authorization",
+            "Cache-Control",
+            "Content-Type",
+            "Accept",
+            "X-Requested-With",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Headers",
+            "Origin"
+        )
+        .exposedHeaders(
+            "Access-Control-Expose-Headers",
+            "Authorization",
+            "Cache-Control",
+            "Content-Type",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Headers",
+            "Origin"
+        )
 
 }
